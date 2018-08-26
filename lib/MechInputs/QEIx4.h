@@ -83,6 +83,7 @@ public:
 	{
 		_limitMin = limitMin;
 		_limitMax = limitMax;
+		write(min(limitMax, max(limitMin, read())));
 	}
 
 	/** Sets the flag for zeroing on next high on index pin while AB lines triggers next counting. The trigger calls tha callback function in which the counter can be set to zero or the actual counter can be latched in for later offset calculation
