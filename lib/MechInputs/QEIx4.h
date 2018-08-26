@@ -27,10 +27,10 @@ License along with MechInputs.  If not, see
 #define QEIX4_H
 
 #if (ARDUINO >= 100)
- #include <Arduino.h>
+	#include <Arduino.h>
 #else
- #include <WProgram.h>
- #include <pins_arduino.h>
+	#include <WProgram.h>
+	#include <pins_arduino.h>
 #endif
 
 class QEIx4
@@ -78,56 +78,57 @@ public:
 		return counter;
 	}
 
-  void setLimit(long limitMin, long limitMax)
-  {
-    _limitMin = limitMin;
-    _limitMax = limitMax;
-  }
+
+	void setLimit(long limitMin, long limitMax)
+	{
+		_limitMin = limitMin;
+		_limitMax = limitMax;
+	}
 
 	/** Sets the flag for zeroing on next high on index pin while AB lines triggers next counting. The trigger calls tha callback function in which the counter can be set to zero or the actual counter can be latched in for later offset calculation
 	*
 	* @param        Flag for triggering. Set to 1 for call the attached callback. It is reseted after this call
 	*/
 	void setIndexTrigger(bool bIndexTrigger=true) {
-    if (_pinI < 0)
-      bIndexTrigger = false;
+	if (_pinI < 0)
+	  bIndexTrigger = false;
 		_bIndexTrigger = bIndexTrigger;
 	}
 
-  bool hasChanged(){
-    return _bHasChanged;
-  }
+	bool hasChanged(){
+		return _bHasChanged;
+	}
 
-  void loop();
+	void loop();
 
 protected:
 
-  /** Polls the state machine and updates the counter value.
+	/** Polls the state machine and updates the counter value.
 	*/
 	void processStateMachine();
 
-  /** Entry point for arduino interrupts - route to class instances
-  */
-  static void ISR();
+	/** Entry point for arduino interrupts - route to class instances
+	*/
+	static void ISR();
 
 protected:
 
-  volatile long _counter;
-  volatile bool _bHasChanged;
-  volatile bool _bIndexTrigger;
+	volatile long _counter;
+	volatile bool _bHasChanged;
+	volatile bool _bIndexTrigger;
 
-  int16_t _pinA;
-  int16_t _pinB;
-  int16_t _pinI;
-  long _limitMin;
-  long _limitMax;
+	int16_t _pinA;
+	int16_t _pinB;
+	int16_t _pinI;
+	long _limitMin;
+	long _limitMax;
 	uint16_t _state;
 	uint16_t _eMode;
 
 private:
 	static uint16_t __stateLUT[32];
-  static QEIx4* __instance[4];
-  uint16_t _eventMask;
+	static QEIx4* __instance[4];
+	uint16_t _eventMask;
 };
 
 #endif // QEIX4_H
