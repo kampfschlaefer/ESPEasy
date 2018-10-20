@@ -19,6 +19,7 @@
 #define PLUGIN_ID_059         59
 #define PLUGIN_NAME_059       "Switch Input - Rotary Encoder"
 #define PLUGIN_VALUENAME1_059 "Counter"
+#define PLUGIN_VALUENAME2_059 "Change"
 
 #include <QEIx4.h>
 
@@ -46,11 +47,11 @@ boolean Plugin_059(byte function, struct EventStruct *event, String& string)
         Device[++deviceCount].Number = PLUGIN_ID_059;
         Device[deviceCount].Type = DEVICE_TYPE_TRIPLE;
         Device[deviceCount].Ports = 0;
-        Device[deviceCount].VType = SENSOR_TYPE_SWITCH;
+        Device[deviceCount].VType = SENSOR_TYPE_DUAL;
         Device[deviceCount].PullUpOption = false;
         Device[deviceCount].InverseLogicOption = false;
         Device[deviceCount].FormulaOption = false;
-        Device[deviceCount].ValueCount = 1;
+        Device[deviceCount].ValueCount = 2;
         Device[deviceCount].SendDataOption = true;
         Device[deviceCount].TimerOption = true;
         Device[deviceCount].TimerOptional = true;
@@ -67,6 +68,7 @@ boolean Plugin_059(byte function, struct EventStruct *event, String& string)
     case PLUGIN_GET_DEVICEVALUENAMES:
       {
         strcpy_P(ExtraTaskSettings.TaskDeviceValueNames[0], PSTR(PLUGIN_VALUENAME1_059));
+        strcpy_P(ExtraTaskSettings.TaskDeviceValueNames[1], PSTR(PLUGIN_VALUENAME2_059));
         break;
       }
 
@@ -116,6 +118,7 @@ boolean Plugin_059(byte function, struct EventStruct *event, String& string)
         Plugin_059_QE->setIndexTrigger(true);
 
         ExtraTaskSettings.TaskDeviceValueDecimals[event->BaseVarIndex] = 0;
+        ExtraTaskSettings.TaskDeviceValueDecimals[event->BaseVarIndex + 1] = 0;
 
         String log = F("QEI  : GPIO: ");
         for (byte i=0; i<3; i++)
@@ -143,7 +146,9 @@ boolean Plugin_059(byte function, struct EventStruct *event, String& string)
           {
             long c = Plugin_059_QE->read();
             UserVar[event->BaseVarIndex] = (float)c;
-            event->sensorType = SENSOR_TYPE_SWITCH;
+            UserVar[event->BaseVarIndex + 1] = (float)(c - Plugin_059_QE->lastRead);
+            Plugin_059_QE->lastRead = c;
+            event->sensorType = SENSOR_TYPE_DUAL;
 
             String log = F("QEI  : ");
             log += c;
@@ -161,7 +166,10 @@ boolean Plugin_059(byte function, struct EventStruct *event, String& string)
       {
         if (Plugin_059_QE)
         {
-          UserVar[event->BaseVarIndex] = (float)Plugin_059_QE->read();
+          long c = Plugin_059_QE->read();
+          UserVar[event->BaseVarIndex] = (float)c;
+          UserVar[event->BaseVarIndex + 1] = (float)(c - Plugin_059_QE->lastRead);
+          Plugin_059_QE->lastRead = c;
         }
         success = true;
         break;

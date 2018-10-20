@@ -102,6 +102,8 @@ public:
 
 	void loop();
 
+	long lastRead;
+
 protected:
 
 	/** Polls the state machine and updates the counter value.
